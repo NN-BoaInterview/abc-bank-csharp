@@ -31,7 +31,7 @@ namespace abc_bank
             return sb.ToString();
         }
 
-        public Double TotalInterestPaid()
+        public Decimal TotalInterestPaid()
         {
             return _customers.Sum(c => c.TotalInterestEarned());
         }

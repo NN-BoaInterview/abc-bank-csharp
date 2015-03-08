@@ -9,11 +9,11 @@ namespace abc_bank
         {
         }
 
-        protected override Double CompoundInterestForPeriod(Double principal, DateTime from, DateTime to)
+        protected override Decimal CompoundInterestForPeriod(Decimal principal, DateTime from, DateTime to)
         {
             if (!HasWithdrawalsWithinLast10Days(to))
             {
-                var previousInterest = 0.0d;
+                var previousInterest = 0.0m;
                 if ((to - from).TotalDays > 10 && HasWithdrawalsWithinLast10Days(from))
                 {
                     // if we dont have withdrawal in the past 10 days and timeframe is more than 10 days need to do complex calculation
@@ -21,9 +21,9 @@ namespace abc_bank
                     previousInterest = CompoundInterestForPeriod(principal, from, transaction.Date.AddDays(10));
                     from = transaction.Date.AddDays(10);
                 }
-                return previousInterest + (principal * Math.Pow(1 + (0.05 / DaysPerYear), Math.Floor((to - from).TotalDays))) - principal;
+                return previousInterest + (principal * (Decimal)Math.Pow(1 + (0.05 / DaysPerYear), Math.Floor((to - from).TotalDays))) - principal;
             }
-            return (principal * Math.Pow(1 + (0.001 / DaysPerYear), Math.Floor((to - from).TotalDays))) - principal;
+            return (principal * (Decimal)Math.Pow(1 + (0.001 / DaysPerYear), Math.Floor((to - from).TotalDays))) - principal;
         }
 
         private Boolean HasWithdrawalsWithinLast10Days(DateTime date)

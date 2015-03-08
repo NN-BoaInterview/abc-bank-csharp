@@ -8,13 +8,13 @@ namespace abc_bank
         {
         }
 
-        protected override Double CompoundInterestForPeriod(Double principal, DateTime from, DateTime to)
+        protected override Decimal CompoundInterestForPeriod(Decimal principal, DateTime from, DateTime to)
         {
             if (principal <= 1000)
             {
-                return (principal * Math.Pow(1 + (0.001 / DaysPerYear), Math.Floor((to - from).TotalDays))) - principal;
+                return (principal * (Decimal)Math.Pow(1 + (0.001 / DaysPerYear), Math.Floor((to - from).TotalDays))) - principal;
             }
-            return CompoundInterestForPeriod(1000, from, to) + ((principal - 1000) * Math.Pow(1 + (0.002 / DaysPerYear), Math.Floor((to - from).TotalDays))) - (principal - 1000);
+            return CompoundInterestForPeriod(1000, from, to) + ((principal - 1000) * (Decimal)Math.Pow(1 + (0.002 / DaysPerYear), Math.Floor((to - from).TotalDays))) - (principal - 1000);
         }
     }
 }

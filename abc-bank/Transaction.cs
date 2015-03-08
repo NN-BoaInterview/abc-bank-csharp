@@ -14,15 +14,15 @@ namespace abc_bank
             Withdrawal,
         }
 
-        private readonly Double _amount;
+        private readonly Decimal _amount;
 
         private readonly DateTime _date;
 
         public TransactionType Type { get { return _amount > 0 ? TransactionType.Deposit : TransactionType.Withdrawal; } }
-        public Double Amount { get { return _amount; } }
+        public Decimal Amount { get { return _amount; } }
         public DateTime Date { get { return _date; } }
 
-        public Transaction(Double amount, DateProvider dateProvider = null)
+        public Transaction(Decimal amount, DateProvider dateProvider = null)
         {
             _amount = amount;
             _date = dateProvider != null ? dateProvider.Now() : DateProvider.Instance.Now();

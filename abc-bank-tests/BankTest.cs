@@ -31,7 +31,7 @@ namespace abc_bank_tests
             DateProvider.Instance.Now = () => DateTime.Now.AddYears(-1);
             account.Deposit(100);
             DateProvider.Instance.Now = () => DateTime.Now;
-            Assert.AreEqual(0.1, Math.Round(bank.TotalInterestPaid(), RoundingDigits), DoubleDelta);
+            Assert.AreEqual(0.1m, Math.Round(bank.TotalInterestPaid(), RoundingDigits));
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace abc_bank_tests
             DateProvider.Instance.Now = () => DateTime.Now.AddYears(-1);
             account.Deposit(500);
             DateProvider.Instance.Now = () => DateTime.Now;
-            Assert.AreEqual(0.5, Math.Round(bank.TotalInterestPaid(), RoundingDigits), DoubleDelta);
+            Assert.AreEqual(0.5m, Math.Round(bank.TotalInterestPaid(), RoundingDigits));
         }
 
         [TestMethod]
@@ -55,7 +55,7 @@ namespace abc_bank_tests
             DateProvider.Instance.Now = () => DateTime.Now.AddYears(-1);
             account.Deposit(1500);
             DateProvider.Instance.Now = () => DateTime.Now;
-            Assert.AreEqual(2.0, Math.Round(bank.TotalInterestPaid(), RoundingDigits), DoubleDelta);
+            Assert.AreEqual(2.0m, Math.Round(bank.TotalInterestPaid(), RoundingDigits));
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace abc_bank_tests
             DateProvider.Instance.Now = () => DateTime.Now.AddYears(-1);
             account.Deposit(3000);
             DateProvider.Instance.Now = () => DateTime.Now;
-            Assert.AreEqual(153.69, Math.Round(bank.TotalInterestPaid(), RoundingDigits), DoubleDelta);
+            Assert.AreEqual(153.69m, Math.Round(bank.TotalInterestPaid(), RoundingDigits));
         }
 
         [TestMethod]
@@ -81,7 +81,7 @@ namespace abc_bank_tests
             DateProvider.Instance.Now = () => DateTime.Now.AddDays(-182);
             account.Withdraw(1000);
             DateProvider.Instance.Now = () => DateTime.Now;
-            Assert.AreEqual(128.47, Math.Round(bank.TotalInterestPaid(), RoundingDigits), DoubleDelta);
+            Assert.AreEqual(128.47m, Math.Round(bank.TotalInterestPaid(), RoundingDigits));
         }
 
         [TestMethod]

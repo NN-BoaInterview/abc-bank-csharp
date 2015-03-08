@@ -20,7 +20,7 @@ namespace abc_bank_tests
             DateProvider.Instance.Now = () => DateTime.Now;
             account.Withdraw(1000);
             var interest = account.InterestEarned();
-            Assert.AreEqual(1.00, Math.Round(interest, RoundingDigits), DoubleDelta);
+            Assert.AreEqual(1.00m, Math.Round(interest, RoundingDigits));
         }
 
         [TestMethod]
@@ -31,7 +31,7 @@ namespace abc_bank_tests
             account.Deposit(1000);
             DateProvider.Instance.Now = () => DateTime.Now;
             var interest = account.InterestEarned();
-            Assert.AreEqual(0.08, Math.Round(interest, RoundingDigits), DoubleDelta);
+            Assert.AreEqual(0.08m, Math.Round(interest, RoundingDigits));
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace abc_bank_tests
             account.Deposit(2000);
             DateProvider.Instance.Now = () => DateTime.Now;
             var interest = account.InterestEarned();
-            Assert.AreEqual(3.00, Math.Round(interest, RoundingDigits), DoubleDelta);
+            Assert.AreEqual(3.00m, Math.Round(interest, RoundingDigits));
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace abc_bank_tests
             DateProvider.Instance.Now = () => DateTime.Now;
             var interest = account.InterestEarned();
             // Should be the same result as checking
-            Assert.AreEqual(0.08, Math.Round(interest, RoundingDigits), DoubleDelta);
+            Assert.AreEqual(0.08m, Math.Round(interest, RoundingDigits));
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace abc_bank_tests
             account.Deposit(2000);
             DateProvider.Instance.Now = () => DateTime.Now;
             var interest = account.InterestEarned();
-            Assert.AreEqual(0.25, Math.Round(interest, RoundingDigits), DoubleDelta);
+            Assert.AreEqual(0.25m, Math.Round(interest, RoundingDigits));
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace abc_bank_tests
             account.Deposit(1000);
             DateProvider.Instance.Now = () => DateTime.Now;
             var interest = account.InterestEarned();
-            Assert.AreEqual(51.23, Math.Round(interest, RoundingDigits), DoubleDelta);
+            Assert.AreEqual(51.23m, Math.Round(interest, RoundingDigits));
         }
 
         [TestMethod]
@@ -91,7 +91,7 @@ namespace abc_bank_tests
             account.Deposit(500);
             DateProvider.Instance.Now = () => DateTime.Now;
             var interest = account.InterestEarned();
-            Assert.AreEqual(5.26, Math.Round(interest, RoundingDigits), DoubleDelta);
+            Assert.AreEqual(5.26m, Math.Round(interest, RoundingDigits));
         }
 
         [TestMethod]

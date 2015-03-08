@@ -37,7 +37,7 @@ namespace abc_bank
             Transactions = new List<Transaction>();
         }
 
-        public void Deposit(Double amount)
+        public void Deposit(Decimal amount)
         {
             if (amount <= 0)
             {
@@ -46,7 +46,7 @@ namespace abc_bank
             Transactions.Add(new Transaction(amount, DateProvider));
         }
 
-        public void Withdraw(Double amount)
+        public void Withdraw(Decimal amount)
         {
             if (amount <= 0)
             {
@@ -55,27 +55,27 @@ namespace abc_bank
             Transactions.Add(new Transaction(-amount, DateProvider));
         }
 
-        public Double SumTransactions()
+        public Decimal SumTransactions()
         {
             return SumTransactions(DateProvider.Now());
         }
 
-        public Double SumTransactions(DateTime toDate)
+        public Decimal SumTransactions(DateTime toDate)
         {
             return Transactions.Where(t => t.Date <= toDate).Sum(t => t.Amount);
         }
 
-        protected abstract Double CompoundInterestForPeriod(Double principal, DateTime from, DateTime to);
+        protected abstract Decimal CompoundInterestForPeriod(Decimal principal, DateTime from, DateTime to);
 
-        public Double InterestEarned()
+        public Decimal InterestEarned()
         {
             // We calculate daily rate according to the following formula:
             // A = P * (1 + r / m) ^ n :: A = amount earned, P = principal, r = annual interest rate, m = number of periods, n = total periods
             var transactions = Transactions.AsEnumerable().GroupBy(t => t.Date.Date).OrderBy(t => t.Key).ToDictionary(d => d.Key, a => a.Sum(t => t.Amount));
-            var totalInterest = 0.0d;
+            var totalInterest = 0.0m;
             var previousTransaction = transactions.First();
             var principal = previousTransaction.Value;
-            var interest = 0.0d;
+            var interest = 0.0m;
             foreach (var transaction in transactions.Skip(1))
             {
                 interest = CompoundInterestForPeriod(principal, previousTransaction.Key, transaction.Key);

@@ -33,12 +33,12 @@ namespace abc_bank
             return Accounts.Count;
         }
 
-        public Double TotalInterestEarned()
+        public Decimal TotalInterestEarned()
         {
             return Accounts.Sum(a => a.InterestEarned());
         }
 
-        public void TransferFunds(IAccount from, IAccount to, Double amount)
+        public void TransferFunds(IAccount from, IAccount to, Decimal amount)
         {
             if (!Accounts.Contains(from))
             {
@@ -56,7 +56,7 @@ namespace abc_bank
         {
             var sb = new StringBuilder();
             sb.Append("Statement for " + Name + "\n");
-            var total = 0.0d;
+            var total = 0.0m;
             foreach (var account in Accounts)
             {
                 sb.Append(String.Format(CultureInfo.InvariantCulture, "\n{0}\n", StatementForAccount(account)));
@@ -70,7 +70,7 @@ namespace abc_bank
         {
             var sb = new StringBuilder();
             sb.Append(account.Type.GetDescription() + "\n");
-            var total = 0.0d;
+            var total = 0.0m;
             foreach (var transaction in account.Transactions)
             {
                 sb.Append(String.Format(CultureInfo.InvariantCulture, "  {0}\n", transaction));
