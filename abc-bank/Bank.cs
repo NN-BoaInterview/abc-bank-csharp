@@ -1,52 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Collections.Generic;
 
 namespace abc_bank
 {
     public class Bank
     {
-        private List<Customer> customers;
+        private readonly ICollection<Customer> _customers;
 
         public Bank()
         {
-            customers = new List<Customer>();
+            _customers = new List<Customer>();
         }
 
         public void AddCustomer(Customer customer)
         {
-            customers.Add(customer);
+            _customers.Add(customer);
         }
 
-        public String CustomerSummary() {
-            String summary = "Customer Summary";
-            foreach (Customer c in customers)
-                summary += "\n - " + c.GetName() + " (" + format(c.GetNumberOfAccounts(), "account") + ")";
-            return summary;
-        }
-
-        //Make sure correct plural of word is created based on the number passed in:
-        //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
+        public String CustomerSummary()
         {
-            return number + " " + (number == 1 ? word : word + "s");
+            var sb = new StringBuilder();
+            sb.Append("Customer Summary");
+            foreach (var customer in _customers)
+            {
+                sb.Append(String.Format(CultureInfo.InvariantCulture, "\n - {0} ({1})", customer.Name, customer.GetNumberOfAccounts().FormatWord("account")));
+            }
+            return sb.ToString();
         }
 
-        public double totalInterestPaid() {
-            double total = 0;
-            foreach(Customer c in customers)
-                total += c.TotalInterestEarned();
-            return total;
+        public Double TotalInterestPaid()
+        {
+            return _customers.Sum(c => c.TotalInterestEarned());
         }
 
+        /// <summary>
+        /// Not sure what this method is for, cannot see the business reason behind getting first customer
+        /// </summary>
+        /// <returns></returns>
         public String GetFirstCustomer()
         {
             try
             {
-                customers = null;
-                return customers[0].GetName();
+                return _customers.First().Name;
             }
             catch (Exception e)
             {

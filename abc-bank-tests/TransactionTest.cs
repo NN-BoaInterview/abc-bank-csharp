@@ -8,11 +8,17 @@ namespace abc_bank_tests
     public class TransactionTest
     {
         [TestMethod]
-        public void Transaction()
+        public void TransactionIsCorrectType()
         {
-            Transaction t = new Transaction(5);
-            //t instanceOf Transaction
-            Assert.IsTrue(t.GetType() == typeof(Transaction));
+            var transaction = new Transaction(5);
+            Assert.IsInstanceOfType(transaction, typeof(Transaction));
+        }
+
+        [TestMethod]
+        public void CanGetCorrectTransactionDate()
+        {
+            var transaction = new Transaction(5);
+            Assert.IsTrue((DateTime.Now - transaction.Date) <= new TimeSpan(0, 0, 1));
         }
     }
 }

@@ -1,84 +1,96 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace abc_bank
 {
-    public class Account
+    public abstract class Account : IAccount
     {
-
-        public const int CHECKING = 0;
-        public const int SAVINGS = 1;
-        public const int MAXI_SAVINGS = 2;
-
-        private readonly int accountType;
-        public List<Transaction> transactions;
-
-        public Account(int accountType) 
+        public enum AccountType
         {
-            this.accountType = accountType;
-            this.transactions = new List<Transaction>();
+            [Description("Checking Account")]
+            Checking,
+
+            [Description("Savings Account")]
+            Savings,
+
+            [Description("Maxi Savings Account")]
+            MaxiSavings
         }
 
-        public void Deposit(double amount) 
+        /// <summary>
+        /// We have 365.25 days per year
+        /// </summary>
+        protected const Double DaysPerYear = 365.25;
+        private readonly AccountType _accountType;
+        protected readonly DateProvider DateProvider;
+
+        public IList<Transaction> Transactions { get; private set; }
+
+        public AccountType Type { get { return _accountType; } }
+
+        protected Account(AccountType accountType, DateProvider dateProvider = null)
         {
-            if (amount <= 0) {
+            _accountType = accountType;
+            DateProvider = dateProvider ?? DateProvider.Instance;
+            Transactions = new List<Transaction>();
+        }
+
+        public void Deposit(Double amount)
+        {
+            if (amount <= 0)
+            {
                 throw new ArgumentException("amount must be greater than zero");
-            } else {
-                transactions.Add(new Transaction(amount));
             }
+            Transactions.Add(new Transaction(amount, DateProvider));
         }
 
-        public void Withdraw(double amount) 
+        public void Withdraw(Double amount)
         {
-            if (amount <= 0) {
+            if (amount <= 0)
+            {
                 throw new ArgumentException("amount must be greater than zero");
-            } else {
-                transactions.Add(new Transaction(-amount));
             }
+            Transactions.Add(new Transaction(-amount, DateProvider));
         }
 
-        public double InterestEarned() 
+        public Double SumTransactions()
         {
-            double amount = sumTransactions();
-            switch(accountType){
-                case SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.001;
-                    else
-                        return 1 + (amount-1000) * 0.002;
-    //            case SUPER_SAVINGS:
-    //                if (amount <= 4000)
-    //                    return 20;
-                case MAXI_SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.02;
-                    if (amount <= 2000)
-                        return 20 + (amount-1000) * 0.05;
-                    return 70 + (amount-2000) * 0.1;
-                default:
-                    return amount * 0.001;
+            return SumTransactions(DateProvider.Now());
+        }
+
+        public Double SumTransactions(DateTime toDate)
+        {
+            return Transactions.Where(t => t.Date <= toDate).Sum(t => t.Amount);
+        }
+
+        protected abstract Double CompoundInterestForPeriod(Double principal, DateTime from, DateTime to);
+
+        public Double InterestEarned()
+        {
+            // We calculate daily rate according to the following formula:
+            // A = P * (1 + r / m) ^ n :: A = amount earned, P = principal, r = annual interest rate, m = number of periods, n = total periods
+            var transactions = Transactions.AsEnumerable().GroupBy(t => t.Date.Date).OrderBy(t => t.Key).ToDictionary(d => d.Key, a => a.Sum(t => t.Amount));
+            var totalInterest = 0.0d;
+            var previousTransaction = transactions.First();
+            var principal = previousTransaction.Value;
+            var interest = 0.0d;
+            foreach (var transaction in transactions.Skip(1))
+            {
+                interest = CompoundInterestForPeriod(principal, previousTransaction.Key, transaction.Key);
+                totalInterest += interest;
+                principal += transaction.Value + interest;
+                previousTransaction = transaction;
             }
+            if (DateProvider.Now().Date > transactions.Last().Key)
+            {
+                var last = transactions.Last();
+                interest = CompoundInterestForPeriod(principal, last.Key, DateProvider.Now().Date);
+                totalInterest += interest;
+                principal += interest;
+            }
+            return totalInterest;
         }
-
-        public double sumTransactions() {
-           return CheckIfTransactionsExist(true);
-        }
-
-        private double CheckIfTransactionsExist(bool checkAll) 
-        {
-            double amount = 0.0;
-            foreach (Transaction t in transactions)
-                amount += t.amount;
-            return amount;
-        }
-
-        public int GetAccountType() 
-        {
-            return accountType;
-        }
-
     }
 }

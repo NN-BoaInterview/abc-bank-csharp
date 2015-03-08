@@ -1,90 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Collections.Generic;
 
 namespace abc_bank
 {
     public class Customer
     {
-        private String name;
-        private List<Account> accounts;
+        public String Name { get; private set; }
+        private ICollection<IAccount> Accounts { get; set; }
 
         public Customer(String name)
         {
-            this.name = name;
-            this.accounts = new List<Account>();
+            Name = name;
+            Accounts = new List<IAccount>();
         }
 
-        public String GetName()
+        public Customer OpenAccount(IAccount account)
         {
-            return name;
-        }
-
-        public Customer OpenAccount(Account account)
-        {
-            accounts.Add(account);
+            Accounts.Add(account);
             return this;
         }
 
-        public int GetNumberOfAccounts()
+        public Customer OpenAccount(Account.AccountType accountType)
         {
-            return accounts.Count;
+            return OpenAccount(AccountFactory.Instance.Create(accountType));
         }
 
-        public double TotalInterestEarned() 
+        public Int32 GetNumberOfAccounts()
         {
-            double total = 0;
-            foreach (Account a in accounts)
-                total += a.InterestEarned();
-            return total;
+            return Accounts.Count;
         }
 
-        public String GetStatement() 
+        public Double TotalInterestEarned()
         {
-            String statement = null;
-            statement = "Statement for " + name + "\n";
-            double total = 0.0;
-            foreach (Account a in accounts) 
+            return Accounts.Sum(a => a.InterestEarned());
+        }
+
+        public void TransferFunds(IAccount from, IAccount to, Double amount)
+        {
+            if (!Accounts.Contains(from))
             {
-                statement += "\n" + statementForAccount(a) + "\n";
-                total += a.sumTransactions();
+                throw new ArgumentException("From account not found for customer");
             }
-            statement += "\nTotal In All Accounts " + ToDollars(total);
-            return statement;
+            if (!Accounts.Contains(to))
+            {
+                throw new ArgumentException("From account not found for customer");
+            }
+            from.Withdraw(amount);
+            to.Deposit(amount);
         }
 
-        private String statementForAccount(Account a) 
+        public String GetStatement()
         {
-            String s = "";
-
-           //Translate to pretty account type
-            switch(a.GetAccountType()){
-                case Account.CHECKING:
-                    s += "Checking Account\n";
-                    break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
-                    break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
-                    break;
+            var sb = new StringBuilder();
+            sb.Append("Statement for " + Name + "\n");
+            var total = 0.0d;
+            foreach (var account in Accounts)
+            {
+                sb.Append(String.Format(CultureInfo.InvariantCulture, "\n{0}\n", StatementForAccount(account)));
+                total += account.SumTransactions();
             }
-
-            //Now total up all the transactions
-            double total = 0.0;
-            foreach (Transaction t in a.transactions) {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + ToDollars(t.amount) + "\n";
-                total += t.amount;
-            }
-            s += "Total " + ToDollars(total);
-            return s;
+            sb.Append(String.Format(CultureInfo.InvariantCulture, "\nTotal In All Accounts {0}", total.ToCurrency()));
+            return sb.ToString();
         }
 
-        private String ToDollars(double d)
+        private static String StatementForAccount(IAccount account)
         {
-            return String.Format("$%,.2f", Math.Abs(d));
+            var sb = new StringBuilder();
+            sb.Append(account.Type.GetDescription() + "\n");
+            var total = 0.0d;
+            foreach (var transaction in account.Transactions)
+            {
+                sb.Append(String.Format(CultureInfo.InvariantCulture, "  {0}\n", transaction));
+                total += transaction.Amount;
+            }
+            sb.Append(String.Format(CultureInfo.InvariantCulture, "Total {0}", total.ToCurrency()));
+            return sb.ToString();
         }
     }
 }
